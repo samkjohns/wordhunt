@@ -22,7 +22,7 @@ button {
 }
 
 select {
-  border: 1px solid gray;
+  border: 1px solid #bcbebf;
 }
 
 select, button:hover {
@@ -33,7 +33,7 @@ input {
   padding: 10px 25px;
   font-size: 1.25rem;
   line-height 1.5;
-  border: 1px solid gray;
+  border: 1px solid #bcbebf;
   text-transform: uppercase;
   letter-spacing: 15px;
 }
@@ -66,7 +66,7 @@ input {
 }
 
 #guesses-root > * {
-  margin-bottom: 20px;
+  margin-bottom: 2px;
 }
 
 #game-panel > * {
@@ -80,8 +80,8 @@ input {
 .word-cell {
   width: 50px;
   height: 50px;
-  margin-right: 5px;
-  border: 1px solid gray;
+  margin-right: 2px;
+  border: 1px solid #bcbebf;
   text-transform: uppercase;
   font-size: 24px;
   line-height: 2;
@@ -131,4 +131,19 @@ input {
   background: #cfe2ff;
   color: #084298;
   border-color: #b6d4fe;
+}
+
+.correct-cell, .incorrect-cell, .other-cell {
+  animation-duration: .5s;
+  animation-name: fadein;
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }

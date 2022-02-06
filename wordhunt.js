@@ -98,7 +98,7 @@
       return;
     }
 
-    const row = addWordRow(getElement(state.ui, 'guesses-root'), guess.length);
+    const row = getElement(state.ui, 'guesses-root').lastChild;
 
     const letterCounts = {};
     for (let i = 0; i < guess.length; i++) {
@@ -118,10 +118,18 @@
         }
       }
     }
+
+    state.game.guesses++;
+    if (state.game.guesses >= 6) {
+      console.log('Game Over');
+    } else {
+      addWordRow(getElement(state.ui, 'guesses-root'), guess.length);
+    }
   }
 
   function newGame(state, wordLength) {
     state.game.word = chooseRandomWord(wordLength);
+    state.game.guesses = 0;
     console.log(state.game.word);
     resetUI(state)
   }
