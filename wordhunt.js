@@ -165,29 +165,53 @@
     const ui = state.ui;
     const row = getElement(ui, 'guesses-root').lastChild;
 
-    const letterCounts = {};
+    const marks = [];
+    const letterCounts = {}; // number of times each letter has been guessed, minus correct placements
+    const correctGuesses = {}; // correct guesses by letter
     for (let i = 0; i < guess.length; i++) {
-      const cell = row.children[i];
       const letter = guess[i];
-      cell.textContent = letter;
       letterCounts[letter] = (letterCounts[letter] || 0) + 1;
+      correctGuesses[letter] = (correctGuesses[letter] || 0);
 
-      const keyEl = getKey(ui, letter);
       if (letter === word[i]) {
-        cell.classList.add('correct-cell');
-        keyEl.classList.add('correct-letter');
+        marks.push('correct-cell correct-letter');
+        correctGuesses[letter]++;
       } else {
-        const appearances = word.split(letter).length - 1;
-        if (appearances === 0 || appearances < letterCounts[letter]) {
-          cell.classList.add('incorrect-cell');
-          if (!keyEl.classList.contains('correct-letter')) {
-            keyEl.classList.add('wrong-letter');
-          }
-        } else {
-          cell.classList.add('other-cell');
-          keyEl.classList.add('correct-letter');
-        }
+        marks.push('-');
       }
+    }
+
+    for (let i = 0; i < guess.length; i++) {
+      const letter = guess[i];
+      if (marks[i] !== '-') continue;
+
+      const keyEl = getKey(ui, guess[i]);
+      const appearances = word.split(letter).length - 1;
+      const remainingOtherGuesses = appearances - correctGuesses[letter];
+
+      if (appearances === 0 || remainingOtherGuesses === 0) {
+        var mark = 'incorrect-cell ';
+        if (!keyEl.classList.contains('correct-letter')) {
+          mark += 'wrong-letter';
+        }
+        marks[i] = mark;
+      } else {
+        marks[i] = 'other-cell correct-letter';
+        correctGuesses[letter]++;
+      }
+    }
+
+    for (let i = 0; i < marks.length; i++) {
+      const pair = marks[i].split(' ');
+      const keyEl = getKey(ui, guess[i]);
+
+      const cell = row.children[i];
+      cell.textContent = guess[i];
+      cell.classList.add(pair[0]);
+      if (pair[1]) {
+        keyEl.classList.add(pair[1]);
+      }
+
       await wait(200);
     }
 
@@ -207,7 +231,6 @@
   function newGame(state, wordLength) {
     state.game.word = chooseRandomWord(wordLength);
     state.game.guesses = 0;
-    console.log(state.game.word);
     resetUI(state)
   }
 
