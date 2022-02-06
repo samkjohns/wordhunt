@@ -1,5 +1,13 @@
 (function () {
 
+  async function wait(ms) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve(ms);
+      }, ms);
+    })
+  }
+
   function removeAllChildren(node) {
     while (node.firstChild) {
       node.removeChild(node.firstChild);
@@ -15,6 +23,18 @@
 
   function getElement(ui, id) {
     return ui.elements[id];
+  }
+
+  function getKey(ui, letter) {
+    letter = letter.toLowerCase();
+    const keys = getElement(ui, 'keys-root');
+    const numKeys = keys.children.length;
+    for (let i = 0; i < numKeys; i++) {
+      const key = keys.children[i].textContent.toLowerCase();
+      if (key === letter) {
+        return keys.children[i];
+      }
+    }
   }
 
   function addWordRow(guessesRoot, wordLength) {
@@ -44,6 +64,7 @@
 
   function setupKeys(ui) {
     const keysRoot = getElement(ui, 'keys-root');
+    keysRoot.innerHTML = '';
     const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     for (let i = 0; i < alphabet.length; i++) {
       const key = document.createElement('div');
@@ -51,10 +72,6 @@
       key.innerText = alphabet[i];
       keysRoot.appendChild(key);
     }
-  }
-
-  function resetKeys(ui) {
-
   }
 
   function createUI(state) {
@@ -69,7 +86,7 @@
 
   function resetUI(state) {
     setupWord(state.ui, state.game.word.length);
-    resetKeys(state.ui);
+    setupKeys(state.ui);
   }
 
   function chooseRandomWord(wordLength) {
@@ -92,13 +109,61 @@
     return guesser.children[0].value;
   }
 
-  function submitGuess(state, guess) {
+  function findWord(word, start, end) {
+    const words = window.words;
+    if (typeof start === 'undefined') {
+      start = 0;
+    }
+    if (typeof end === 'undefined') {
+      end = words.length;
+    }
+
+    const n = end - start;
+
+    if (n === 0) {
+      return false;
+    }
+
+    if (n < 2000) {
+      for (let i = start; i < end; i++) {
+        if (words[i] === word) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    const midpoint = Math.floor(n / 2) + start;
+    if (words[midpoint] === word) {
+      return true;
+    }
+
+    const comparison = word.localeCompare(words[midpoint]);
+    if (comparison === -1) { // word comes before midpoint
+      return findWord(word, start, midpoint);
+    }
+
+    if (comparison === 1) { // word comes after midpoint
+      return findWord(word, midpoint, end);
+    }
+
+    console.log('findWord had a problem: comparison was ', comparison, word, words[midpoint]);
+    return false;
+  }
+
+  async function submitGuess(state, guess) {
     const word = state.game.word;
     if (guess.length != word.length) {
       return;
     }
 
-    const row = getElement(state.ui, 'guesses-root').lastChild;
+    if (!findWord(guess)) {
+      console.log(guess, 'is not a valid word');
+      return;
+    }
+
+    const ui = state.ui;
+    const row = getElement(ui, 'guesses-root').lastChild;
 
     const letterCounts = {};
     for (let i = 0; i < guess.length; i++) {
@@ -107,23 +172,35 @@
       cell.textContent = letter;
       letterCounts[letter] = (letterCounts[letter] || 0) + 1;
 
+      const keyEl = getKey(ui, letter);
       if (letter === word[i]) {
         cell.classList.add('correct-cell');
+        keyEl.classList.add('correct-letter');
       } else {
         const appearances = word.split(letter).length - 1;
         if (appearances === 0 || appearances < letterCounts[letter]) {
           cell.classList.add('incorrect-cell');
+          if (!keyEl.classList.contains('correct-letter')) {
+            keyEl.classList.add('wrong-letter');
+          }
         } else {
           cell.classList.add('other-cell');
+          keyEl.classList.add('correct-letter');
         }
       }
+      await wait(200);
     }
 
     state.game.guesses++;
-    if (state.game.guesses >= 6) {
+    if (guess === word) {
+      console.log('You Won in ', state.game.guesses);
+    } else if (state.game.guesses >= 6) {
       console.log('Game Over');
     } else {
-      addWordRow(getElement(state.ui, 'guesses-root'), guess.length);
+      addWordRow(getElement(ui, 'guesses-root'), guess.length);
+      const input = getElement(ui, 'guesser').children[0];
+      input.value = '';
+      input.classList.remove('guess-ready');
     }
   }
 
