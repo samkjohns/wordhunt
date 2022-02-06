@@ -1,0 +1,134 @@
+body, div, span, p, h1, h2, h3, h4, ul, ol, li, input, textarea, input, label, select, button {
+  padding: 0;
+  margin: 0;
+  outline: 0;
+  border: 0;
+
+  font-family: sans-serif;
+  text: inherit;
+  color: inherit;
+  background: transparent;
+}
+
+button {
+  color: white;
+  background: #0d6efd;
+  border: 1px solid #0d6efd;
+  padding: 2px 10px;
+  border-radius: 0.25rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+select {
+  border: 1px solid gray;
+}
+
+select, button:hover {
+  cursor: pointer;
+}
+
+input {
+  padding: 10px 25px;
+  font-size: 1.25rem;
+  line-height 1.5;
+  border: 1px solid gray;
+  text-transform: uppercase;
+  letter-spacing: 15px;
+}
+
+#root {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  display: flex;
+}
+
+#game-panel {
+  display: flex;
+  flex-direction: column;
+  padding: 15px 40px;
+  min-width: 500px;
+  align-items: center;
+}
+
+#game-panel > h1 {
+  align-self: center;
+}
+
+#guesses-root {
+  display: flex;
+  flex-direction: column;
+}
+
+#guesses-root > * {
+  margin-bottom: 20px;
+}
+
+#game-panel > * {
+  margin-bottom: 20px;
+}
+
+.word-row {
+  display: flex;
+}
+
+.word-cell {
+  width: 50px;
+  height: 50px;
+  margin-right: 5px;
+  border: 1px solid gray;
+  text-transform: uppercase;
+  font-size: 24px;
+  line-height: 2;
+  font-weight: bold;
+  vertical-align: middle;
+  text-align: center;
+  color: white;
+}
+
+#keys-root {
+  display: flex;
+  flex-wrap: wrap;
+  width: 250px;
+  justify-content: center;
+}
+
+.key {
+  display: inline-block;
+  margin: 3px;
+}
+
+.wrong-letter {
+  color: gray;
+}
+
+.correct-letter {
+  color: green;
+}
+
+.guess-ready {
+  border-color: green;
+}
+
+.correct-cell {
+  background: #d1e7dd;
+  color: #0f5132;
+  border-color: #badbcc;
+}
+
+.incorrect-cell {
+  color: #141619;
+  background: #d3d3d4;
+  border-color: #bcbebf;
+}
+
+.other-cell {
+  background: #cfe2ff;
+  color: #084298;
+  border-color: #b6d4fe;
+}

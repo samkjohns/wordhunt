@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head>
+  <link rel="stylesheet" href="./styles.css"/>
+  <script type="text/javascript" src="./words.js"></script>
+  <script type="text/javascript" src="./wordhunt.js"></script>
+</head>
+<body>
+  <div id="root">
+    <div id="game-panel">
+      <h1>Word Hunt</h1>
+      <div id="guesses-root"></div>
+      <div id="guesser">
+        <input type="text"/>
+      </div>
+      <div id="keys-root"></div>
+      <div id="options">
+        <label for="word-length-select">Word length</label>
+        <select id="word-length-select" name="word-length-select">
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5" selected>5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+          <option value="10">10</option>
+          <option value="11">11</option>
+          <option value="12">12</option>
+          <option value="13">13</option>
+          <option value="14">14</option>
+        </select>
+      </div>
+      <button id="start-button">New Game</button>
+    </div>
+  </div>
+</body>
+</html>
