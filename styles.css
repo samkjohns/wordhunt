@@ -101,10 +101,11 @@ input {
 .key {
   display: inline-block;
   margin: 3px;
+  font-weight: bold;
 }
 
 .wrong-letter {
-  color: gray;
+  color: #e7e7e7;
 }
 
 .correct-letter {
@@ -112,7 +113,8 @@ input {
 }
 
 .guess-ready {
-  border-color: green;
+  border-color: #62c598;
+  border-width: 2px;
 }
 
 .correct-cell {
@@ -134,7 +136,7 @@ input {
 }
 
 .correct-cell, .incorrect-cell, .other-cell {
-  animation-duration: .5s;
+  animation-duration: .3s;
   animation-name: fadein;
 }
 
