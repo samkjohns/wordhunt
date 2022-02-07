@@ -36,11 +36,10 @@ input {
   border: 1px solid #bcbebf;
   text-transform: uppercase;
   letter-spacing: 15px;
-  min-width: 80%;
-  max-width: 100%;
   margin: auto;
   display: block;
   text-align: center;
+  flex: .6 1 10px;
 }
 
 input:hover {
@@ -48,13 +47,10 @@ input:hover {
 }
 
 #root {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  position: relative;
   margin: auto;
-  display: flex;
+  max-width: fit-content;
+  max-width: -moz-fit-content;
 }
 
 #game-panel {
@@ -70,6 +66,8 @@ input:hover {
 }
 
 #guesser {
+  display: flex;
+  align-items: center;
   width: 100%;
 }
 

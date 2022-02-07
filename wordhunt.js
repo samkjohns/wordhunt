@@ -264,8 +264,6 @@
         submitGuess(state, guess);
       } else if (document.activeElement !== input && input.value.length < input.maxLength) {
         input.focus();
-        //input.value += String.fromCharCode(evt.keyCode);
-        //onInput();
       }
     });
   }
