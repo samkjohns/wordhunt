@@ -37,6 +37,10 @@
     }
   }
 
+  function setMessage(ui, message) {
+    getElement(ui, 'messages').innerText = message;
+  }
+
   function addWordRow(guessesRoot, wordLength) {
     const wordRow = document.createElement('div');
     wordRow.className = 'word-row';
@@ -78,13 +82,14 @@
     var ui = {};
     state.ui = ui;
     ui.elements = {};
-    var ids = ['root', 'options', 'game-panel', 'guesses-root', 'keys-root', 'guesser', 'start-button', 'word-length-select'];
+    var ids = ['root', 'options', 'game-panel', 'guesses-root', 'keys-root', 'guesser', 'start-button', 'word-length-select', 'messages'];
     getElements(ui.elements, ids);
     setupWord(ui, 5);
     setupKeys(ui);
   }
 
   function resetUI(state) {
+    setMessage(state.ui, '');
     setupWord(state.ui, state.game.word.length);
     setupKeys(state.ui);
   }
@@ -152,13 +157,14 @@
   }
 
   async function submitGuess(state, guess) {
+    setMessage(state.ui, '');
     const word = state.game.word;
     if (guess.length != word.length) {
       return;
     }
 
     if (!findWord(guess)) {
-      console.log(guess, 'is not a valid word');
+      setMessage(state.ui, guess + ' is not a valid word');
       return;
     }
 
@@ -217,9 +223,9 @@
 
     state.game.guesses++;
     if (guess === word) {
-      console.log('You Won in ', state.game.guesses);
+      setMessage(state.ui, 'You Won in ' + state.game.guesses + ' guesses.');
     } else if (state.game.guesses >= 6) {
-      console.log('Game Over');
+      setMessage(state.ui, 'Game Over. The word was ' + state.game.word);
     } else {
       addWordRow(getElement(ui, 'guesses-root'), guess.length);
       const input = getElement(ui, 'guesser').children[0];
@@ -231,7 +237,7 @@
   function newGame(state, wordLength) {
     state.game.word = chooseRandomWord(wordLength);
     state.game.guesses = 0;
-    resetUI(state)
+    resetUI(state);
   }
 
   function initGame(state) {
