@@ -249,18 +249,23 @@
     });
 
     const input = getElement(ui, 'guesser').children[0];
-    input.addEventListener('input', function (evt) {
+    function onInput() {
       if (input.value.length === state.game.word.length) {
         input.classList.add('guess-ready');
       } else {
         input.classList.remove('guess-ready');
       }
-    });
+    }
+    input.addEventListener('input', onInput);
 
     document.addEventListener('keypress', function (evt) {
       const guess = getGuess(state);
       if (evt.keyCode === 13) { // enter
         submitGuess(state, guess);
+      } else if (document.activeElement !== input && input.value.length < input.maxLength) {
+        input.focus();
+        //input.value += String.fromCharCode(evt.keyCode);
+        //onInput();
       }
     });
   }

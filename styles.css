@@ -40,6 +40,11 @@ input {
   max-width: 100%;
   margin: auto;
   display: block;
+  text-align: center;
+}
+
+input:hover {
+  cursor: default;
 }
 
 #root {
