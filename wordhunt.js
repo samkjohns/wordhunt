@@ -265,7 +265,6 @@
     state.game = game;
     const gameId = getGameId();
     if (typeof gameId === 'number') {
-      console.log('new game from index', gameId, state);
       newGameFromIndex(state, gameId);
     } else {
       newGame(state, 5);
