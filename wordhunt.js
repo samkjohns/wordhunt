@@ -82,7 +82,7 @@
     var ui = {};
     state.ui = ui;
     ui.elements = {};
-    var ids = ['root', 'options', 'game-panel', 'guesses-root', 'keys-root', 'guesser', 'start-button', 'word-length-select', 'messages'];
+    var ids = ['root', 'options', 'game-panel', 'guesses-root', 'keys-root', 'guesser', 'buttons', 'challenge', 'start-button', 'word-length-select', 'messages'];
     getElements(ui.elements, ids);
     setupWord(ui, 5);
     setupKeys(ui);
@@ -98,7 +98,7 @@
     let i = Math.floor(Math.random() * window.words.length);
     while (true) {
       if (window.words[i].length === wordLength) {
-        return window.words[i];
+        return i;
       }
 
       if (i < window.words.length) {
@@ -235,23 +235,58 @@
   }
 
   function newGame(state, wordLength) {
-    state.game.word = chooseRandomWord(wordLength);
+    state.game.wordIndex = chooseRandomWord(wordLength);
+    state.game.word = window.words[state.game.wordIndex];
     state.game.guesses = 0;
+    resetUI(state);
+  }
+
+  function getGameId() {
+    try {
+      return parseInt(location.search.split('?')[1].split('id=')[1]);
+    } catch (err) {
+      return false;
+    }
+  }
+
+  function newGameFromIndex(state, idx) {
+    const word = window.words[idx];
+    state.game = {
+      wordIndex: idx,
+      word: word,
+      guesses: 0
+    };
+
     resetUI(state);
   }
 
   function initGame(state) {
     const game = {};
     state.game = game;
-    newGame(state, 5);
+    const gameId = getGameId();
+    if (typeof gameId === 'number') {
+      console.log('new game from index', gameId, state);
+      newGameFromIndex(state, gameId);
+    } else {
+      newGame(state, 5);
+    }
   }
 
   function setupListeners(state) {
     const ui = state.ui;
     const wordLengthSelect = getElement(ui, 'word-length-select');
-    const btn = getElement(ui, 'start-button');
-    btn.addEventListener('click', function (evt) {
+    const startBtn = getElement(ui, 'start-button');
+    startBtn.addEventListener('click', function (evt) {
       newGame(state, parseInt(wordLengthSelect.value));
+    });
+
+    const challengeBtn = getElement(ui, 'challenge');
+    challengeBtn.addEventListener('click', function (evt) {
+      const url = location.protocol + '//' + location.pathname + '?id=' + state.game.wordIndex;
+      var data = [new ClipboardItem({
+        'text/plain': new Blob([url], { type: 'text/plain' })
+      })];
+      navigator.clipboard.write(data);
     });
 
     const input = getElement(ui, 'guesser').children[0];
