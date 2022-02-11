@@ -163,8 +163,9 @@
       return;
     }
 
+    guess = guess.toLowerCase();
     if (!findWord(guess)) {
-      setMessage(state.ui, guess + ' is not a valid word');
+      setMessage(state.ui, guess.toUpperCase() + ' is not a valid word');
       return;
     }
 
@@ -226,7 +227,7 @@
       setMessage(state.ui, 'You Won in ' + state.game.guesses + ' guesses.');
       state.game.won = true;
     } else if (state.game.guesses >= 6) {
-      setMessage(state.ui, 'Game Over. The word was ' + state.game.word);
+      setMessage(state.ui, 'Game Over. The word was ' + state.game.word.toUpperCase());
       state.game.lost = true;
     } else {
       addWordRow(getElement(ui, 'guesses-root'), guess.length);
