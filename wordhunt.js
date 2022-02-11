@@ -94,11 +94,12 @@
     setupKeys(state.ui);
   }
 
-  function chooseRandomWord(wordLength) {
+  async function chooseRandomWord(wordLength) {
     let i = Math.floor(Math.random() * window.words.length);
     while (true) {
       if (window.words[i].length === wordLength) {
-        return i;
+        const ok = await verifyWord(window.words[i]);
+        if (ok) return i;
       }
 
       if (i < window.words.length) {
@@ -154,6 +155,18 @@
 
     console.log('findWord had a problem: comparison was ', comparison, word, words[midpoint]);
     return false;
+  }
+
+  async function verifyWord(word) {
+    const url = `https://api.dictionaryapi.dev/api/v2/entries/en/${word}`;
+    return fetch(url).then(resp => {
+      if (resp.status != 200) return '[]';
+      return resp.text();
+
+    }).then(body => {
+      const json = JSON.parse(body);
+      return json.some(blob => blob['word'] === word);
+    });
   }
 
   async function submitGuess(state, guess) {
@@ -237,8 +250,8 @@
     }
   }
 
-  function newGame(state, wordLength) {
-    const wordIndex = chooseRandomWord(wordLength);
+  async function newGame(state, wordLength) {
+    const wordIndex = await chooseRandomWord(wordLength);
     state.game = {
       wordIndex: wordIndex,
       word: window.words[wordIndex],
@@ -345,5 +358,4 @@ ${url}`;
     initGame(state);
     setupListeners(state);
   });
-
 })();
