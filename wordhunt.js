@@ -224,8 +224,10 @@
     state.game.guesses++;
     if (guess === word) {
       setMessage(state.ui, 'You Won in ' + state.game.guesses + ' guesses.');
+      state.game.won = true;
     } else if (state.game.guesses >= 6) {
       setMessage(state.ui, 'Game Over. The word was ' + state.game.word);
+      state.game.lost = true;
     } else {
       addWordRow(getElement(ui, 'guesses-root'), guess.length);
       const input = getElement(ui, 'guesser').children[0];
@@ -235,9 +237,12 @@
   }
 
   function newGame(state, wordLength) {
-    state.game.wordIndex = chooseRandomWord(wordLength);
-    state.game.word = window.words[state.game.wordIndex];
-    state.game.guesses = 0;
+    const wordIndex = chooseRandomWord(wordLength);
+    state.game = {
+      wordIndex: wordIndex,
+      word: window.words[wordIndex],
+      guesses: 0
+    };
     resetUI(state);
   }
 
@@ -256,7 +261,6 @@
       word: word,
       guesses: 0
     };
-
     resetUI(state);
   }
 
@@ -271,6 +275,27 @@
     }
   }
 
+  function getEmojiRep(state) {
+    const emojiRows = [];
+    const guesses = getElement(state.ui, 'guesses-root');
+    const rows = [].slice.call(guesses.children);
+    rows.forEach(row => {
+      const cells = [].slice.call(row.children);
+      const emojis = [];
+      cells.forEach(cell => {
+        if (cell.classList.contains('correct-cell')) {
+          emojis.push(String.fromCodePoint('0x1F7E9'));
+        } else if (cell.classList.contains('other-cell')) {
+          emojis.push(String.fromCodePoint('0x1F7E8'));
+        } else {
+          emojis.push(String.fromCodePoint('0x2B1C'));
+        }
+      });
+      emojiRows.push(emojis.join(''));
+    });
+    return emojiRows.join('\n');
+  }
+
   function setupListeners(state) {
     const ui = state.ui;
     const wordLengthSelect = getElement(ui, 'word-length-select');
@@ -282,8 +307,13 @@
     const challengeBtn = getElement(ui, 'challenge');
     challengeBtn.addEventListener('click', function (evt) {
       const url = location.protocol + '//' + location.pathname + '?id=' + state.game.wordIndex;
+      const emojis = getEmojiRep(state);
+      const title = state.game.won ? `won in ${state.game.guesses} guesses` : `lost`;
+      const text = `Word Hunt ${title}
+${emojis}
+${url}`;
       var data = [new ClipboardItem({
-        'text/plain': new Blob([url], { type: 'text/plain' })
+        'text/plain': new Blob([text], { type: 'text/plain' })
       })];
       navigator.clipboard.write(data);
     });
