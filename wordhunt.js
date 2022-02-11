@@ -84,12 +84,27 @@
     ui.elements = {};
     var ids = ['root', 'options', 'game-panel', 'guesses-root', 'keys-root', 'guesser', 'buttons', 'challenge', 'start-button', 'word-length-select', 'messages'];
     getElements(ui.elements, ids);
-    setupWord(ui, 5);
-    setupKeys(ui);
+  }
+
+  function toggleToLoader(state) {
+    const input = getElement(state.ui, 'guesser').querySelector('input');
+    if (!input) return;
+
+    input.remove();
+    guesser.innerHTML = '<div class="loader">Loading</div>';
+  }
+
+  function toggleToInput(state) {
+    const input = getElement(state.ui, 'guesser').querySelector('input');
+    if (input) return;
+
+    guesser.innerHTML = '<input type="text"></input>';
+    setupInputListener(state);
   }
 
   function resetUI(state) {
     setMessage(state.ui, '');
+    toggleToInput(state);
     setupWord(state.ui, state.game.word.length);
     setupKeys(state.ui);
   }
@@ -251,6 +266,8 @@
   }
 
   async function newGame(state, wordLength) {
+    toggleToLoader(state);
+
     const wordIndex = await chooseRandomWord(wordLength);
     state.game = {
       wordIndex: wordIndex,
@@ -310,6 +327,19 @@
     return emojiRows.join('\n');
   }
 
+  function setupInputListener(state) {
+    const ui = state.ui;
+    const input = getElement(ui, 'guesser').querySelector('input');
+    function onInput() {
+      if (input.value.length === state.game.word.length) {
+        input.classList.add('guess-ready');
+      } else {
+        input.classList.remove('guess-ready');
+      }
+    }
+    input && input.addEventListener('input', onInput);
+  }
+
   function setupListeners(state) {
     const ui = state.ui;
     const wordLengthSelect = getElement(ui, 'word-length-select');
@@ -332,21 +362,12 @@ ${url}`;
       navigator.clipboard.write(data);
     });
 
-    const input = getElement(ui, 'guesser').children[0];
-    function onInput() {
-      if (input.value.length === state.game.word.length) {
-        input.classList.add('guess-ready');
-      } else {
-        input.classList.remove('guess-ready');
-      }
-    }
-    input.addEventListener('input', onInput);
-
     document.addEventListener('keypress', function (evt) {
       const guess = getGuess(state);
+      const input = getElement(state.ui, 'guesser').querySelector('input');
       if (evt.keyCode === 13) { // enter
         submitGuess(state, guess);
-      } else if (document.activeElement !== input && input.value.length < input.maxLength) {
+      } else if (input && document.activeElement !== input && input.value.length < input.maxLength) {
         input.focus();
       }
     });
